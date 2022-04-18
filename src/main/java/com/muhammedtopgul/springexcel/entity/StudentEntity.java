@@ -1,6 +1,9 @@
 package com.muhammedtopgul.springexcel.entity;
 
-import javax.persistence.*;
+import com.muhammedtopgul.springexcel.annotation.ExcelColumn;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author muhammed-topgul
@@ -9,33 +12,21 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "t_student")
-public class StudentEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+public class StudentEntity extends BaseEntity {
     private String address;
+    @ExcelColumn(columnHeader = "Province")
     private String city;
+    @ExcelColumn(exclude = true)
     private String pin;
 
     public StudentEntity() {
     }
 
     public StudentEntity(Long id, String name, String address, String city, String pin) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.address = address;
         this.city = city;
         this.pin = pin;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getAddress() {

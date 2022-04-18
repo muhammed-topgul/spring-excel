@@ -1,6 +1,5 @@
 package com.muhammedtopgul.springexcel.helper;
 
-import com.muhammedtopgul.springexcel.entity.StudentEntity;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -12,26 +11,31 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author muhammed-topgul
  * @since 18.04.2022 11:20
  */
 
-public class ExcelExporter {
-    private final String[] headers = {"Id", "Name", "Address", "City", "Pin"};
-    private final String sheetName = "Student";
-    private final String fileHeader = "Student Information";
-    private final List<StudentEntity> listOfStudent;
-
-    private XSSFWorkbook workbook;
+public class ExcelExporter<T> {
+    private final ExcelColumnProcessor excelColumnProcessor = new ExcelColumnProcessor();
+    private final String sheetName;
+    private final String fileHeader;
+    private final List<T> dataList;
+    private final Map<String, String> fieldNames;
+    private final Class<?> clazz;
+    private final XSSFWorkbook workbook;
     private XSSFSheet sheet;
 
-    public ExcelExporter(List<StudentEntity> listOfStudent) {
-        this.listOfStudent = listOfStudent;
+    public ExcelExporter(List<T> dataList, String sheetName, String fileHeader) {
+        this.sheetName = sheetName;
+        this.fileHeader = fileHeader;
+        this.dataList = dataList;
         workbook = new XSSFWorkbook();
+        clazz = dataList.get(0).getClass();
+        fieldNames = excelColumnProcessor.getFieldNamesForClass(clazz);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle cellStyle) {
@@ -67,13 +71,16 @@ public class ExcelExporter {
         font.setFontHeight(16);
         cellStyle.setFont(font);
 
-        for (int column = 0; column < headers.length; column++) {
-            createCell(row, column, headers[column], cellStyle);
+        int column = 0;
+        for (Map.Entry<String, String> entry : fieldNames.entrySet()) {
+            String fieldHeader = entry.getValue();
+            createCell(row, column, fieldHeader, cellStyle);
+            column++;
         }
     }
 
     private void writeDataLines() {
-        int rowCount = listOfStudent.size();
+        int rowCount = dataList.size();
 
         CellStyle cellStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
@@ -82,28 +89,32 @@ public class ExcelExporter {
 
         Row row;
         int columnCount;
-        for (StudentEntity student : listOfStudent) {
+        for (T data : dataList) {
             row = sheet.createRow(rowCount++);
             columnCount = 0;
-            createCell(row, columnCount++, student.getId(), cellStyle);
-            createCell(row, columnCount++, student.getName(), cellStyle);
-            createCell(row, columnCount++, student.getAddress(), cellStyle);
-            createCell(row, columnCount++, student.getCity(), cellStyle);
-            createCell(row, columnCount, student.getPin(), cellStyle);
+
+            for (Map.Entry<String, String> entry : fieldNames.entrySet()) {
+                String fieldName = entry.getKey();
+                Object value = null;
+                try {
+                    value = excelColumnProcessor.invokeMethod(clazz, data, fieldName);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                createCell(row, columnCount++, value, cellStyle);
+            }
         }
     }
 
-    public void exportExcel(HttpServletResponse response)  {
-        writeHeaderLine();
-        writeDataLines();
-
-        ServletOutputStream outputStream;
+    public void exportExcel(HttpServletResponse response) {
         try {
-            outputStream = response.getOutputStream();
+            writeHeaderLine();
+            writeDataLines();
+            ServletOutputStream outputStream = response.getOutputStream();
             workbook.write(outputStream);
             workbook.close();
             outputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
