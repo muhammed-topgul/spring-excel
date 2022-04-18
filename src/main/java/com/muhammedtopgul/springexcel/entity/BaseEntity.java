@@ -1,5 +1,7 @@
 package com.muhammedtopgul.springexcel.entity;
 
+import com.muhammedtopgul.springexcel.annotation.ExcelColumn;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,6 +17,8 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ExcelColumn
     private String name;
 
     public BaseEntity() {

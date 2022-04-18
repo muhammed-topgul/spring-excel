@@ -13,10 +13,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "t_student")
 public class StudentEntity extends BaseEntity {
+    @ExcelColumn(columnHeader = "Address")
     private String address;
     @ExcelColumn(columnHeader = "Province")
     private String city;
-    @ExcelColumn(exclude = true)
+    @ExcelColumn
     private String pin;
 
     public StudentEntity() {

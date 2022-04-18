@@ -18,15 +18,12 @@ public class ExcelColumnProcessor {
     private String columnHeader = "";
 
     private boolean isExclude(Field field) {
-        if (field.isAnnotationPresent(ExcelColumn.class)) {
-            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-            if (!excelColumn.exclude())
-                columnHeader = excelColumn.columnHeader().trim();
-            else
-                columnHeader = "";
-            return excelColumn.exclude();
-        }
-        return false;
+        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+        if (!excelColumn.exclude())
+            columnHeader = excelColumn.columnHeader().trim();
+        else
+            columnHeader = "";
+        return excelColumn.exclude();
     }
 
     public Map<String, String> getFieldNamesForClass(Class<?> clazz) {
@@ -36,13 +33,14 @@ public class ExcelColumnProcessor {
         return fieldNames;
     }
 
-    private Map<String, String> readClassFields(Field[] fields) {
+    private void readClassFields(Field[] fields) {
         for (Field field : fields) {
-            if (!isExclude(field)) {
-                fieldNames.put(field.getName(), !columnHeader.equals("") ? columnHeader : capitalize(field.getName()));
+            if (field.isAnnotationPresent(ExcelColumn.class)) {
+                if (!isExclude(field)) {
+                    fieldNames.put(field.getName(), !columnHeader.equals("") ? columnHeader : capitalize(field.getName()));
+                }
             }
         }
-        return fieldNames;
     }
 
     public <T> Object invokeMethod(Class<? extends Object> clazz, T dataClass, String fieldName) throws Exception {

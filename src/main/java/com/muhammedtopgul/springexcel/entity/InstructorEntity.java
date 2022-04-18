@@ -1,5 +1,7 @@
 package com.muhammedtopgul.springexcel.entity;
 
+import com.muhammedtopgul.springexcel.annotation.ExcelColumn;
+
 import javax.persistence.Entity;
 
 /**
@@ -9,7 +11,9 @@ import javax.persistence.Entity;
 
 @Entity
 public class InstructorEntity extends BaseEntity {
+    @ExcelColumn(exclude = true)
     private String department;
+    @ExcelColumn(columnHeader = "Appellation")
     private String title;
 
     public InstructorEntity() {
