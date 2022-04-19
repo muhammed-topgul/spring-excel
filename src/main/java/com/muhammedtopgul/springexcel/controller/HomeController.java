@@ -4,7 +4,7 @@ import com.muhammedtopgul.springexcel.entity.InstructorEntity;
 import com.muhammedtopgul.springexcel.entity.StudentEntity;
 import com.muhammedtopgul.springexcel.repository.InstructorRepository;
 import com.muhammedtopgul.springexcel.repository.StudentRepository;
-import com.muhammedtopgul.springexcel.helper.ExcelExporter;
+import com.muhammedtopgul.springexcel.excel.ExcelExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
