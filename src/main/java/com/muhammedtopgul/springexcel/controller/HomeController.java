@@ -48,7 +48,7 @@ public class HomeController {
     private void prepareResponse(HttpServletResponse response, String fileName) {
         response.setContentType("application/octet-stream");
         String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=%s.xlsx", (fileName != null) ? fileName : ("Unknown_" + new Date()));
+        String headerValue = String.format("attachment; filename=%s.xlsx", (fileName != null) ? fileName : ("Unknown_" + new Date().getTime()));
         response.setHeader(headerKey, headerValue);
     }
 }

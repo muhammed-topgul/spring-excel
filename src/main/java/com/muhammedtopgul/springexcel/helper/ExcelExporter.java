@@ -38,7 +38,7 @@ public class ExcelExporter<T> {
         fieldNames = excelColumnProcessor.getFieldNamesForClass(clazz);
     }
 
-    private void createCell(Row row, int columnCount, Object value, CellStyle cellStyle) {
+    private <E> void createCell(Row row, int columnCount, E value, CellStyle cellStyle) {
         sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
         if (value instanceof Long) {
@@ -55,13 +55,14 @@ public class ExcelExporter<T> {
 
     private void writeHeaderLine() {
         sheet = workbook.createSheet(sheetName);
-        Row row = sheet.createRow(0);
         CellStyle cellStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setBold(true);
         font.setFontHeight(20);
         cellStyle.setFont(font);
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        Row row = sheet.createRow(0);
         createCell(row, 0, fileHeader, cellStyle);
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4));
         font.setFontHeightInPoints((short) 10);
@@ -73,8 +74,8 @@ public class ExcelExporter<T> {
 
         int column = 0;
         for (Map.Entry<String, String> entry : fieldNames.entrySet()) {
-            String fieldHeader = entry.getValue();
-            createCell(row, column, fieldHeader, cellStyle);
+            String columnHeader = entry.getValue();
+            createCell(row, column, columnHeader, cellStyle);
             column++;
         }
     }

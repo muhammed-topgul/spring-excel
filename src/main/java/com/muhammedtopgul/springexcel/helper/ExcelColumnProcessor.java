@@ -43,7 +43,7 @@ public class ExcelColumnProcessor {
         }
     }
 
-    public <T> Object invokeMethod(Class<? extends Object> clazz, T dataClass, String fieldName) throws Exception {
+    public <T> Object invokeMethod(Class<?> clazz, T dataClass, String fieldName) throws Exception {
         Method method;
         try {
             method = clazz.getMethod("get" + capitalize(fieldName));
