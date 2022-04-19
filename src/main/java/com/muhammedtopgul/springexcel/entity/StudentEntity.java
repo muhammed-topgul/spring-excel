@@ -1,6 +1,7 @@
 package com.muhammedtopgul.springexcel.entity;
 
 import com.muhammedtopgul.springexcel.annotation.ExcelColumn;
+import lombok.Getter;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "t_student")
+@Getter
 public class StudentEntity extends BaseEntity {
     @ExcelColumn(columnHeader = "Address")
     private String address;
@@ -28,17 +30,5 @@ public class StudentEntity extends BaseEntity {
         this.address = address;
         this.city = city;
         this.pin = pin;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getPin() {
-        return pin;
     }
 }

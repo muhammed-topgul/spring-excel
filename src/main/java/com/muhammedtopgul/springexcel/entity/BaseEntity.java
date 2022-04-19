@@ -1,6 +1,7 @@
 package com.muhammedtopgul.springexcel.entity;
 
 import com.muhammedtopgul.springexcel.annotation.ExcelColumn;
+import lombok.Getter;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,7 @@ import javax.persistence.MappedSuperclass;
  */
 
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,13 +29,5 @@ public abstract class BaseEntity {
     public BaseEntity(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }
