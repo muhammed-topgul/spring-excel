@@ -12,7 +12,7 @@ import java.util.Map;
  * @since 18.04.2022 16:50
  */
 
-public class ExcelColumnProcessor {
+class ExcelColumnProcessor {
 
     private final Map<String, String> fieldNames = new HashMap<>();
     private String columnHeader = "";

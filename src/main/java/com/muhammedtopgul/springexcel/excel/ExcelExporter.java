@@ -8,9 +8,11 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,23 +21,35 @@ import java.util.Map;
  * @since 18.04.2022 11:20
  */
 
+@Component
 public class ExcelExporter<T> {
     private final ExcelColumnProcessor excelColumnProcessor = new ExcelColumnProcessor();
-    private final String sheetName;
-    private final String fileHeader;
-    private final List<T> dataList;
-    private final Map<String, String> fieldNames;
-    private final Class<?> clazz;
-    private final XSSFWorkbook workbook;
+    private String sheetName;
+    private String fileHeader;
+    private List<T> dataList;
+    private Map<String, String> fieldNames;
+    private Class<?> clazz;
+    private XSSFWorkbook workbook;
     private XSSFSheet sheet;
 
-    public ExcelExporter(List<T> dataList, String sheetName, String fileHeader) {
+    public ExcelExporter<T> setup(List<T> dataList, String sheetName, String fileHeader) {
+        if (dataList == null || dataList.isEmpty())
+            throw new UnsupportedOperationException("DataList cannot be null");
         this.sheetName = sheetName;
         this.fileHeader = fileHeader;
         this.dataList = dataList;
         workbook = new XSSFWorkbook();
         clazz = dataList.get(0).getClass();
         fieldNames = excelColumnProcessor.getFieldNamesForClass(clazz);
+        return this;
+    }
+
+    public void produce(HttpServletResponse response, String fileName) {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=%s.xlsx", (fileName != null) ? fileName : ("Unknown_" + new Date().getTime()));
+        response.setHeader(headerKey, headerValue);
+        this.exportExcel(response);
     }
 
     private <E> void createCell(Row row, int columnCount, E value, CellStyle cellStyle) {
@@ -107,7 +121,7 @@ public class ExcelExporter<T> {
         }
     }
 
-    public void exportExcel(HttpServletResponse response) {
+    private void exportExcel(HttpServletResponse response) {
         try {
             writeHeaderLine();
             writeDataLines();

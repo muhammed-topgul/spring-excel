@@ -29,26 +29,21 @@ public class HomeController {
     @Autowired
     private InstructorRepository instructorRepository;
 
+    @Autowired
+    private ExcelExporter<StudentEntity> studentExporter;
+
+    @Autowired
+    private ExcelExporter<InstructorEntity> instructorExporter;
+
     @GetMapping("/export-student")
     public void exportStudentToExcel(HttpServletResponse response, @RequestParam(required = false) String fileName) {
-        prepareResponse(response, fileName);
         List<StudentEntity> listOfStudent = studentRepository.findAll();
-        ExcelExporter<StudentEntity> excelExporter = new ExcelExporter<>(listOfStudent, "StudentList","Student Information");
-        excelExporter.exportExcel(response);
+        studentExporter.setup(listOfStudent, "StudentList","Student Information").produce(response, fileName);
     }
 
     @GetMapping("/export-instructor")
     public void exportInstructorToExcel(HttpServletResponse response, @RequestParam(required = false) String fileName) {
-        prepareResponse(response, fileName);
         List<InstructorEntity> listOfInstructor = instructorRepository.findAll();
-        ExcelExporter<InstructorEntity> excelExporter = new ExcelExporter<>(listOfInstructor,"InstructorList", "Instructor Information");
-        excelExporter.exportExcel(response);
-    }
-
-    private void prepareResponse(HttpServletResponse response, String fileName) {
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=%s.xlsx", (fileName != null) ? fileName : ("Unknown_" + new Date().getTime()));
-        response.setHeader(headerKey, headerValue);
+        instructorExporter.setup(listOfInstructor, "StudentList","Student Information").produce(response, fileName);
     }
 }
